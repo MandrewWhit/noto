@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>763065945258-7okfn1qomr6ebjmf66nfp5mrogva8jhr.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.763065945258-7okfn1qomr6ebjmf66nfp5mrogva8jhr</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDfwv43erSkex9-7Q1vo_-II3Mat8z-4LA</string>
+	<key>GCM_SENDER_ID</key>
+	<string>763065945258</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.notow.dev</string>
+	<key>PROJECT_ID</key>
+	<string>notow-d3636</string>
+	<key>STORAGE_BUCKET</key>
+	<string>notow-d3636.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:763065945258:ios:37ec0d2d0334c66b2854d3</string>
+</dict>
+</plist>
