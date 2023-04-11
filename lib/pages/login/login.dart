@@ -25,11 +25,13 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _resetPasswordKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
+    final resetController = TextEditingController();
     final appleSignInAvailable =
         Provider.of<AppleSignInAvailable>(context, listen: false);
     return Scaffold(
@@ -165,7 +167,9 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     TextButton(
                       onPressed: () {
-                        Navigator.of(context).pushNamed('/reset-password');
+                        //Navigator.of(context).pushNamed('/reset-password');
+                        _showMyDialog(
+                            context, "", "Reset Password", resetController);
                       },
                       child: const Text(
                         'Forgot Password',
@@ -208,5 +212,80 @@ class _LoginPageState extends State<LoginPage> {
             ],
           ),
         ));
+  }
+
+  Future<void> _showMyDialog(BuildContext context, String message, String title,
+      TextEditingController controller) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                //Text(message),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            Form(
+              key: _resetPasswordKey,
+              child: Column(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 30.0, right: 30.0, top: 30.0, bottom: 20.0),
+                    child: TextFormField(
+                      controller: controller,
+                      decoration: InputDecoration(
+                          labelText: 'Email',
+                          hintText: '',
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1,
+                                color: Color.fromARGB(255, 211, 220, 230)),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Colors.indigo),
+                            borderRadius: BorderRadius.circular(15),
+                          )),
+                      validator: (String? value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your email';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            TextButton(
+              child: const Text('Send Email'),
+              onPressed: () => onResetEmailButtonPressed(controller.text),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void onResetEmailButtonPressed(String email) {
+    Navigator.of(context).pop();
+    BlocProvider.of<AuthBloc>(context).add(ResetPasswordEvent(email: email));
+    // final snackBar = SnackBar(
+    //   content: const Text('Reset Password Email Sent'),
+    //   behavior: SnackBarBehavior.floating,
+    //   shape: RoundedRectangleBorder(
+    //     borderRadius: BorderRadius.circular(24),
+    //   ),
+    //   margin: EdgeInsets.only(
+    //       top: MediaQuery.of(context).size.height + 150, right: 20, left: 20),
+    // );
+    // ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

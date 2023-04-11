@@ -56,8 +56,7 @@ class ResetPasswordPage extends StatelessWidget {
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: const BorderSide(
-                                        width: 1,
-                                        color: Color.fromARGB(255, 0, 176, 80)),
+                                        width: 1, color: Colors.indigo),
                                     borderRadius: BorderRadius.circular(15),
                                   )),
                               validator: (String? value) {
@@ -82,19 +81,20 @@ class ResetPasswordPage extends StatelessWidget {
                           context.read<AuthBloc>().add(ResetPasswordEvent(
                                 email: emailController.text,
                               ));
-                          final snackBar = SnackBar(
-                            content: const Text('Reset Password Email Sent'),
-                            behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                            margin: EdgeInsets.only(
-                                bottom:
-                                    MediaQuery.of(context).size.height - 150,
-                                right: 20,
-                                left: 20),
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          // final snackBar = SnackBar(
+                          //   content: const Text('Reset Password Email Sent'),
+                          //   behavior: SnackBarBehavior.floating,
+                          //   shape: RoundedRectangleBorder(
+                          //     borderRadius: BorderRadius.circular(24),
+                          //   ),
+                          //   margin: EdgeInsets.only(
+                          //       bottom:
+                          //           MediaQuery.of(context).size.height - 150,
+                          //       right: 20,
+                          //       left: 20),
+                          // );
+                          // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          Navigator.pop(context);
                         },
                         child: const Text(
                           'Reset Password',

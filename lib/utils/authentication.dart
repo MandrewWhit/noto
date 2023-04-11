@@ -83,13 +83,13 @@ class AuthenticationService {
           if (fullName != null &&
               fullName.givenName != null &&
               fullName.familyName != null) {
-            // final displayName = '${fullName.givenName} ${fullName.familyName}';
-            // await firebaseUser.updateDisplayName(displayName);
+            final displayName = '${fullName.givenName} ${fullName.familyName}';
+            await firebaseUser.updateDisplayName(displayName);
             if (userCredential.user?.uid != null) {
-              // String userUid = userCredential.user?.uid ?? "";
-              // String userEmail = userCredential.user?.email ?? "";
-              // await FirebaseService(userUid).updateUserData(userEmail,
-              //     fullName.givenName ?? "", fullName.familyName ?? "");
+              String userUid = userCredential.user?.uid ?? "";
+              String userEmail = userCredential.user?.email ?? "";
+              await FirebaseService(userUid).updateUserData(userEmail,
+                  fullName.givenName ?? "", fullName.familyName ?? "");
               return _userFromFirebase(userCredential.user);
             }
           }

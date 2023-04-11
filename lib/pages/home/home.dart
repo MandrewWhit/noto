@@ -3,11 +3,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nowtowv1/bloc/auth/auth_bloc.dart';
 import 'package:nowtowv1/bloc/auth/auth_events.dart';
 import 'package:nowtowv1/bloc/auth/auth_state.dart';
+import 'package:nowtowv1/bloc/overview/overview_bloc.dart';
+import 'package:nowtowv1/bloc/overview/overview_state.dart';
 import 'package:nowtowv1/pages/map/map.dart';
 import 'package:nowtowv1/utils/location_service.dart';
 import 'package:nowtowv1/utils/notow_colors.dart';
 import 'package:nowtowv1/utils/route_generator.dart';
 import 'package:nowtowv1/widgets/greeting.dart';
+import 'package:nowtowv1/widgets/new_marker_button.dart';
+import 'package:nowtowv1/widgets/overview_card.dart';
+import 'package:nowtowv1/widgets/panel_info.dart';
 import 'package:nowtowv1/widgets/sign_out_button.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -55,8 +60,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final double _initFabHeight = 140.0;
   double _fabHeight = 0;
-  double _panelHeightOpen = 0;
-  double _panelHeightClosed = 125.0;
+  //double _panelHeightOpen = 0;
+  //double _panelHeightClosed = 125.0;
+  double _panelHeightClosed = 0;
 
   @override
   void initState() {
@@ -67,52 +73,62 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    _panelHeightOpen = MediaQuery.of(context).size.height * .80;
-    return Material(
-      child: Stack(
-        alignment: Alignment.topCenter,
-        children: <Widget>[
-          SlidingUpPanel(
-            maxHeight: _panelHeightOpen,
-            minHeight: _panelHeightClosed,
-            parallaxEnabled: true,
-            parallaxOffset: .5,
-            body: _body(),
-            panelBuilder: (sc) => _panel(sc),
-            borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(18.0),
-                topRight: Radius.circular(18.0)),
-            onPanelSlide: (double pos) => setState(() {
-              _fabHeight = pos * (_panelHeightOpen - _panelHeightClosed) +
-                  _initFabHeight;
-            }),
-          ),
+    final userBloc = BlocProvider.of<AuthBloc>(context);
+    if (userBloc.state.firstname == null || userBloc.state.lastname == null) {
+      userBloc.add(GetNameEvent());
+    }
+    //_panelHeightOpen = MediaQuery.of(context).size.height * .80;
+    return Scaffold(
+      body: Material(
+        child: Stack(
+          alignment: Alignment.topCenter,
+          children: <Widget>[
+            //OverviewCard(description: ''),
+            BlocBuilder<OverviewBloc, OverviewState>(
+                bloc: BlocProvider.of<OverviewBloc>(context),
+                builder: (context, state) {
+                  return SlidingUpPanel(
+                    maxHeight: state.panelHeightOpened ?? 0,
+                    minHeight: state.panelHeightClosed ?? 0,
+                    parallaxEnabled: true,
+                    parallaxOffset: .5,
+                    body: _body(),
+                    panelBuilder: (sc) => _panel(sc),
+                    borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(18.0),
+                        topRight: Radius.circular(18.0)),
+                    // onPanelSlide: (double pos) => setState(() {
+                    //   _fabHeight = pos * (_panelHeightOpen - _panelHeightClosed) +
+                    //       _initFabHeight;
+                    onPanelSlide: (double pos) {},
+                  );
+                }),
+            // the fab
+            // Positioned(
+            //   right: 20.0,
+            //   bottom: _fabHeight,
+            //   child: FloatingActionButton(
+            //     child: Icon(
+            //       Icons.gps_fixed,
+            //       color: Theme.of(context).primaryColor,
+            //     ),
+            //     onPressed: () {},
+            //     backgroundColor: Colors.white,
+            //   ),
+            // ),
 
-          // the fab
-          Positioned(
-            right: 20.0,
-            bottom: _fabHeight,
-            child: FloatingActionButton(
-              child: Icon(
-                Icons.gps_fixed,
-                color: Theme.of(context).primaryColor,
-              ),
-              onPressed: () {},
-              backgroundColor: Colors.white,
-            ),
-          ),
-
-          Positioned(
-              top: 0,
-              child: ClipRRect(
-                  child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).padding.top,
-                        color: Colors.transparent,
-                      )))),
-        ],
+            Positioned(
+                top: 0,
+                child: ClipRRect(
+                    child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).padding.top,
+                          color: Colors.transparent,
+                        )))),
+          ],
+        ),
       ),
     );
   }
@@ -121,34 +137,8 @@ class _HomePageState extends State<HomePage> {
     return MediaQuery.removePadding(
         context: context,
         removeTop: true,
-        child: ListView(
-          controller: sc,
-          children: <Widget>[
-            SizedBox(
-              height: 12.0,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                  width: 30,
-                  height: 5,
-                  decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.all(Radius.circular(12.0))),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 18.0,
-            ),
-            Greeting(),
-            SizedBox(
-              height: 36.0,
-            ),
-            SignOutButton(),
-            SizedBox(height: 24.0),
-          ],
+        child: PanelInfo(
+          sc: sc,
         ));
   }
 

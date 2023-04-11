@@ -55,7 +55,7 @@ dependencies:
   lottie: ^1.2.1
   the_apple_sign_in: ^1.1.1
   import_sorter: ^4.6.0
-  image_picker: ^0.8.6+1
+  image_picker: ^0.8.7
   circular_profile_avatar: ^2.0.5
   permission_handler: ^10.2.0
   extended_image: ^4.0.0
@@ -66,6 +66,7 @@ dependencies:
   sliding_up_panel: ^2.0.0+1
   geolocator: ^9.0.2
   geolocator_apple: ^2.2.5
+  shimmer: ^2.0.0
 
 dependency_overrides:
   intl: ^0.17.0-nullsafety.2
@@ -92,11 +93,21 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  plugin:
+    platforms:
+      ios:
+        pluginClass: GeofencingPlugin
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  # plugin:
+  #   platforms:
+  #     ios:
+  #       #dartPluginClass: GeofencingPlugin
+  #       pluginClass: GeofencingPlugin
+
 
   # To add assets to your application, add an assets section, like this:
   assets:

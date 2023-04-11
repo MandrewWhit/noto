@@ -1,11 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geolocator_apple/geolocator_apple.dart';
 import 'package:geolocator_android/geolocator_android.dart';
 import 'dart:async';
 import 'package:geolocator_apple/geolocator_apple.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:nowtowv1/bloc/mapbloc/map_bloc.dart';
 
 class LocationService {
   static late LocationSettings locationSettings;
