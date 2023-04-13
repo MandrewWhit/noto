@@ -67,22 +67,41 @@ class _PanelInfoState extends State<PanelInfo> {
               SizedBox(
                 height: 18.0,
               ),
-              Padding(
-                padding: EdgeInsets.only(left: 8, right: 8),
-                child: Text(
-                  name,
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+
+              Row(children: <Widget>[
+                SizedBox(
+                  height: 75,
+                  width: MediaQuery.of(context).size.width * .75,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 10, right: 8),
+                    child: SizedBox.expand(
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child: Text(
+                          name,
+                          style: TextStyle(
+                              color: Colors.indigo,
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                Padding(
+                  padding: EdgeInsets.only(right: 5, left: 25),
+                  child: Icon(Icons.thumb_up_outlined),
+                )
+              ]),
               SizedBox(
-                height: 75.0,
+                height: 100.0,
               ),
               //Greeting(),
               const Padding(
-                padding: EdgeInsets.only(left: 8, right: 8),
+                padding: EdgeInsets.only(left: 8, right: 8, bottom: 8),
                 child: Text(
-                  "Description:",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  "Description",
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
               ),
               Padding(

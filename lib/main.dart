@@ -47,8 +47,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    GeofencingManager.initialize();
-    GeofenceTrigger.createHomeGeofence();
   }
 
   @override

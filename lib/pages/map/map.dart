@@ -45,7 +45,7 @@ class _TowMapState extends State<TowMap> {
           builder: (context) => GestureDetector(
             child: const Icon(
               Icons.location_pin,
-              color: Colors.redAccent,
+              color: Colors.indigoAccent,
               size: 48.0,
             ),
           ),
