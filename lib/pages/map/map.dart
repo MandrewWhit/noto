@@ -43,10 +43,18 @@ class _TowMapState extends State<TowMap> {
         Marker(
           point: LatLng(customMarkers[i].lat, customMarkers[i].lng),
           builder: (context) => GestureDetector(
-            child: const Icon(
-              Icons.location_pin,
-              color: Colors.indigoAccent,
-              size: 48.0,
+            child: GestureDetector(
+              onTap: () {
+                BlocProvider.of<OverviewBloc>(context)
+                    .add(ToggleOpacityEvent(opacity: true, context: context));
+                BlocProvider.of<OverviewBloc>(context)
+                    .add(SetMarkerEvent(marker: customMarkers[i]));
+              },
+              child: Icon(
+                Icons.location_pin,
+                color: Colors.indigo,
+                size: 48.0,
+              ),
             ),
           ),
         ),
@@ -70,28 +78,29 @@ class _TowMapState extends State<TowMap> {
                 mapController: mapController,
                 options: MapOptions(
                   onTap: (tapPosition, point) {
-                    final state = BlocProvider.of<MarkersBloc>(context).state;
+                    // final state = BlocProvider.of<MarkersBloc>(context).state;
+                    // bool markerTap = false;
+                    // if (state.markers != null) {
+                    //   for (int i = 0; i < state.markers!.length; i++) {
+                    //     if ((state.markers![i].lat < point.latitude + 0.001 &&
+                    //             state.markers![i].lat >
+                    //                 point.latitude - 0.001) &&
+                    //         (state.markers![i].lng < point.longitude + 0.001 &&
+                    //             state.markers![i].lng >
+                    //                 point.longitude - 0.001)) {
+                    //       markerTap = true;
+                    //       //ViewMarkerDialog.showViewMarkerDialog(
+                    //       //    context, state.markers![i]);
+                    //       BlocProvider.of<OverviewBloc>(context).add(
+                    //           ToggleOpacityEvent(
+                    //               opacity: true, context: context));
+                    //       BlocProvider.of<OverviewBloc>(context)
+                    //           .add(SetMarkerEvent(marker: state.markers![i]));
+                    //       break;
+                    //     }
+                    //   }
+                    // }
                     bool markerTap = false;
-                    if (state.markers != null) {
-                      for (int i = 0; i < state.markers!.length; i++) {
-                        if ((state.markers![i].lat < point.latitude + 0.005 &&
-                                state.markers![i].lat >
-                                    point.latitude - 0.005) &&
-                            (state.markers![i].lng < point.longitude + 0.005 &&
-                                state.markers![i].lng >
-                                    point.longitude - 0.005)) {
-                          markerTap = true;
-                          //ViewMarkerDialog.showViewMarkerDialog(
-                          //    context, state.markers![i]);
-                          BlocProvider.of<OverviewBloc>(context).add(
-                              ToggleOpacityEvent(
-                                  opacity: true, context: context));
-                          BlocProvider.of<OverviewBloc>(context)
-                              .add(SetMarkerEvent(marker: state.markers![i]));
-                          break;
-                        }
-                      }
-                    }
                     if (!markerTap) {
                       BlocProvider.of<OverviewBloc>(context).add(
                           ToggleOpacityEvent(opacity: false, context: context));
@@ -128,23 +137,23 @@ class _TowMapState extends State<TowMap> {
                             'pk.eyJ1IjoiYW5kcmV3d2hpdDk5IiwiYSI6ImNsZmc2MnlsZjA0MXgzcXF4Z2o4eXI4dWwifQ.YK0li1kJBWf_VYqsKP4u8w',
                         'id': 'clfg66io3000y01nxck6woufq'
                       }),
-                  MarkerLayer(markers: towMarkers
-                      //     [
-                      //   Marker(
-                      //       point: towMarkers[1].point,
-                      //       builder: (context) => GestureDetector(
-                      //             onTap: () {
-                      //               int a = 0;
-                      //             },
-                      //             child: const Icon(
-                      //               Icons.location_on,
-                      //               color: Colors.blue,
-                      //               size: 48.0,
+                  //MarkerLayer(markers: towMarkers
+                  //     [
+                  //   Marker(
+                  //       point: towMarkers[1].point,
+                  //       builder: (context) => GestureDetector(
+                  //             onTap: () {
+                  //               int a = 0;
+                  //             },
+                  //             child: const Icon(
+                  //               Icons.location_on,
+                  //               color: Colors.blue,
+                  //               size: 48.0,
 
-                      //           ),
-                      //       height: 60),
-                      // ]),
-                      ),
+                  //           ),
+                  //       height: 60),
+                  // ]),
+                  //  ),
                   CircleLayer(
                     circles: [
                       CircleMarker(
@@ -155,7 +164,8 @@ class _TowMapState extends State<TowMap> {
                           borderColor: Colors.white,
                           borderStrokeWidth: 5)
                     ],
-                  )
+                  ),
+                  MarkerLayer(markers: towMarkers),
                 ],
               );
       },

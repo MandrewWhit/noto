@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:like_button/like_button.dart';
 import 'package:nowtowv1/bloc/auth/auth_bloc.dart';
+import 'package:nowtowv1/bloc/auth/auth_events.dart';
+import 'package:nowtowv1/bloc/markers/markers_bloc.dart';
+import 'package:nowtowv1/bloc/markers/markers_events.dart';
 import 'package:nowtowv1/bloc/overview/overview_bloc.dart';
+import 'package:nowtowv1/bloc/overview/overview_events.dart';
 import 'package:nowtowv1/bloc/overview/overview_state.dart';
 import 'package:nowtowv1/models/marker.dart';
 import 'package:nowtowv1/widgets/generic_button.dart';
 import 'package:nowtowv1/widgets/greeting.dart';
 import 'package:nowtowv1/widgets/sign_out_button.dart';
 import 'package:nowtowv1/utils/firebase_storage.dart';
+import 'package:nowtowv1/widgets/title_shimmer.dart';
 import 'package:nowtowv1/widgets/update_marker.dart';
 import 'package:provider/provider.dart';
 
@@ -21,8 +27,10 @@ class PanelInfo extends StatefulWidget {
 }
 
 class _PanelInfoState extends State<PanelInfo> {
+  bool _isLiked = false;
   @override
   Widget build(BuildContext context) {
+    double buttonSize = 30;
     return BlocBuilder<OverviewBloc, OverviewState>(
         bloc: BlocProvider.of<OverviewBloc>(context),
         builder: (context, state) {
@@ -32,6 +40,16 @@ class _PanelInfoState extends State<PanelInfo> {
               widget.sc.animateTo(500,
                   duration: Duration(milliseconds: 500), curve: Curves.ease);
             }
+          }
+          if ((BlocProvider.of<AuthBloc>(context).state.upVotes != null &&
+                  state.marker?.id != null) &&
+              BlocProvider.of<AuthBloc>(context)
+                  .state
+                  .upVotes!
+                  .contains(state.marker!.id)) {
+            _isLiked = true;
+          } else {
+            _isLiked = false;
           }
           bool userMarker = false;
           if (state.marker?.uid != null) {
@@ -64,10 +82,59 @@ class _PanelInfoState extends State<PanelInfo> {
                   ),
                 ],
               ),
-              SizedBox(
-                height: 18.0,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(right: 20),
+                    child: GestureDetector(
+                      child: LikeButton(
+                        isLiked: _isLiked,
+                        size: buttonSize,
+                        // circleColor: const CircleColor(
+                        //     start: Color(0xff00ddff), end: Color(0xff0099cc)),
+                        circleColor: const CircleColor(
+                            start: Colors.redAccent, end: Colors.indigo),
+                        bubblesColor: const BubblesColor(
+                          dotPrimaryColor: Color(0xff33b5e5),
+                          dotSecondaryColor: Color(0xff0099cc),
+                        ),
+                        likeBuilder: (bool isLiked) {
+                          return Icon(
+                            Icons.favorite,
+                            color: isLiked ? Colors.indigoAccent : Colors.grey,
+                            size: buttonSize,
+                          );
+                        },
+                        likeCount: state.marker?.upVotes ?? 0,
+                        onTap: (bool isLiked) {
+                          setState(() {
+                            _isLiked = !isLiked;
+                          });
+                          return onLikeButtonTapped(
+                              isLiked, state.marker ?? CustomMarker());
+                        },
+                        countBuilder: (int? count, bool isLiked, String text) {
+                          var color =
+                              isLiked ? Colors.indigoAccent : Colors.grey;
+                          Widget result;
+                          if (count == 0) {
+                            result = Text(
+                              "like",
+                              style: TextStyle(color: color),
+                            );
+                          } else
+                            result = Text(
+                              text,
+                              style: TextStyle(color: color),
+                            );
+                          return result;
+                        },
+                      ),
+                    ),
+                  )
+                ],
               ),
-
               Row(children: <Widget>[
                 SizedBox(
                   height: 75,
@@ -75,23 +142,21 @@ class _PanelInfoState extends State<PanelInfo> {
                   child: Padding(
                     padding: EdgeInsets.only(left: 10, right: 8),
                     child: SizedBox.expand(
-                      child: FittedBox(
-                        fit: BoxFit.contain,
-                        child: Text(
-                          name,
-                          style: TextStyle(
-                              color: Colors.indigo,
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
+                      // child: FittedBox(
+                      //fit: BoxFit.contain,
+                      child: name == ""
+                          ? TitleShimmer()
+                          : Text(
+                              name,
+                              style: const TextStyle(
+                                  color: Colors.indigo,
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold),
+                            ),
                     ),
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(right: 5, left: 25),
-                  child: Icon(Icons.thumb_up_outlined),
-                )
+                //),
               ]),
               SizedBox(
                 height: 100.0,
@@ -146,5 +211,30 @@ class _PanelInfoState extends State<PanelInfo> {
             ],
           );
         });
+  }
+
+  Future<bool> onLikeButtonTapped(bool isLiked, CustomMarker marker) async {
+    if (!isLiked) {
+      var upVotes = marker.upVotes ?? 0;
+      upVotes += 1;
+      marker.upVotes = upVotes;
+      BlocProvider.of<MarkersBloc>(context)
+          .add(UpdateMarkerEvent(marker: marker, id: marker.id ?? ""));
+      BlocProvider.of<OverviewBloc>(context)
+          .add(SetMarkerEvent(marker: marker));
+      BlocProvider.of<AuthBloc>(context)
+          .add(UpVoteMarkerEvent(id: marker.id ?? ""));
+    } else {
+      var upVotes = marker.upVotes ?? 0;
+      upVotes -= 1;
+      marker.upVotes = upVotes;
+      BlocProvider.of<MarkersBloc>(context)
+          .add(UpdateMarkerEvent(marker: marker, id: marker.id ?? ""));
+      BlocProvider.of<OverviewBloc>(context)
+          .add(SetMarkerEvent(marker: marker));
+      BlocProvider.of<AuthBloc>(context)
+          .add(DownVoteMarkerEvent(id: marker.id ?? ""));
+    }
+    return !isLiked;
   }
 }

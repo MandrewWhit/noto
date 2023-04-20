@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:nowtowv1/bloc/auth/auth_events.dart';
 import 'package:nowtowv1/bloc/auth/auth_state.dart';
 import 'package:nowtowv1/utils/authentication.dart';
+import 'package:nowtowv1/utils/firebase.dart';
 import 'package:the_apple_sign_in/the_apple_sign_in.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 // Dart imports:
@@ -30,8 +31,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<GetNameEvent>(_mapGetNameEventToState);
     on<UpdateProfilePicEvent>(_mapUpdateProfilePicEventToState);
     on<VerifyEmailEvent>(_mapVerifyEmailEventToState);
+    on<UpVoteMarkerEvent>(_mapAddUpVoteEventToState);
+    on<DownVoteMarkerEvent>(_mapRemoveUpVoteEventToState);
   }
   final AuthenticationService authService;
+  var numEvents = 0;
 
   void _mapCreateEventToState(
       CreateAccountEvent event, Emitter<AuthState> emit) async {
@@ -72,6 +76,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     String firstname = "";
     String lastname = "";
     String url = "";
+    List<String> upVotes = [];
     try {
       if (event.props[3] as bool) {
         try {
@@ -91,17 +96,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(state.copyWith(status: AuthStatus.error));
         }
       }
-      CollectionReference userCollection =
-          FirebaseFirestore.instance.collection('Users');
-      DocumentSnapshot snapshot = await userCollection.doc(newUser!.uid).get();
-      Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
-      if (data.containsKey('first_name')) {
-        firstname = "${data['first_name']}";
-      }
-      if (data.containsKey('last_name')) {
-        lastname = "${data['last_name']}";
-      }
-      String profilePicId = "profilepic" + newUser.uid;
+      Map<String, dynamic> userData = await getUserData(state.user!.uid);
+      firstname = userData['first_name'];
+      lastname = userData['last_name'];
+      upVotes = (List<String>.from(userData['up_votes'] as List));
+
+      String profilePicId = "profilepic" + newUser!.uid;
       var ref = FirebaseStorage.instance.ref().child(profilePicId);
       url = await ref.getDownloadURL();
       emit(state.copyWith(
@@ -110,6 +110,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           firstname: firstname,
           lastname: lastname,
           profilePicUrl: url,
+          upVotes: upVotes,
           emailVerified: true));
     } catch (error, stacktrace) {
       if (error is FirebaseException) {
@@ -124,6 +125,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             firstname: firstname,
             lastname: lastname,
             profilePicUrl: null,
+            upVotes: upVotes,
             emailVerified: true));
       } else {
         QuickAlert.show(
@@ -227,18 +229,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     bool profilePicError = false;
     String firstname = "";
     String lastname = "";
+    List<String> upVotes = [];
     try {
-      final CollectionReference userCollection =
-          FirebaseFirestore.instance.collection('Users');
-      DocumentSnapshot snapshot =
-          await userCollection.doc(state.user!.uid).get();
-      Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
-      if (data.containsKey('first_name')) {
-        firstname = "${data['first_name']}";
-      }
-      if (data.containsKey('last_name')) {
-        lastname = "${data['last_name']}";
-      }
+      Map<String, dynamic> userData = await getUserData(state.user!.uid);
+      firstname = userData['first_name'];
+      lastname = userData['last_name'];
+      upVotes = (List<String>.from(userData['up_votes'] as List));
       String profilePicId = "profilepic" + state.user!.uid;
       final ref = FirebaseStorage.instance.ref().child(profilePicId);
       String url = await ref.getDownloadURL();
@@ -247,6 +243,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           user: state.user,
           firstname: firstname,
           lastname: lastname,
+          upVotes: upVotes,
           profilePicUrl: url));
     } catch (error, stacktrace) {
       if (error is FirebaseException) {
@@ -260,6 +257,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             user: state.user,
             firstname: firstname,
             lastname: lastname,
+            upVotes: upVotes,
             profilePicUrl: null));
       }
       log(stacktrace.toString());
@@ -289,5 +287,89 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       log(stacktrace.toString());
       emit(state.copyWith(status: AuthStatus.error));
     }
+  }
+
+  void _mapAddUpVoteEventToState(
+      UpVoteMarkerEvent event, Emitter<AuthState> emit) async {
+    emit(state.copyWith(status: AuthStatus.loading));
+    try {
+      List<String> upVotes = [];
+      if (event.id.isNotEmpty) {
+        final CollectionReference userCollection =
+            FirebaseFirestore.instance.collection('Users');
+        DocumentSnapshot<Map<String, dynamic>> snapshot = await userCollection
+            .doc(state.user!.uid)
+            .get() as DocumentSnapshot<Map<String, dynamic>>;
+        Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+        if (data.containsKey('up_votes')) {
+          upVotes = (List<String>.from(data['up_votes'] as List));
+          upVotes.add(event.id);
+          await userCollection.doc(state.user!.uid).update({
+            'up_votes': upVotes,
+          });
+        } else {
+          upVotes = [event.id];
+          await userCollection.doc(state.user!.uid).update({
+            'up_votes': upVotes,
+          });
+        }
+
+        emit(state.copyWith(status: AuthStatus.success, upVotes: upVotes));
+      } else {
+        emit(state.copyWith(status: AuthStatus.error));
+      }
+    } catch (error, stacktrace) {
+      log(stacktrace.toString());
+      emit(state.copyWith(status: AuthStatus.error));
+    }
+  }
+
+  void _mapRemoveUpVoteEventToState(
+      DownVoteMarkerEvent event, Emitter<AuthState> emit) async {
+    emit(state.copyWith(status: AuthStatus.loading));
+    try {
+      List<String> upVotes = [];
+      if (event.id.isNotEmpty) {
+        final CollectionReference userCollection =
+            FirebaseFirestore.instance.collection('Users');
+        DocumentSnapshot<Map<String, dynamic>> snapshot = await userCollection
+            .doc(state.user!.uid)
+            .get() as DocumentSnapshot<Map<String, dynamic>>;
+        Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+        if (data.containsKey('up_votes')) {
+          upVotes = (List<String>.from(data['up_votes'] as List));
+          upVotes.remove(event.id);
+          await userCollection.doc(state.user!.uid).update({
+            'up_votes': upVotes,
+          });
+        }
+        emit(state.copyWith(status: AuthStatus.success, upVotes: upVotes));
+      } else {
+        emit(state.copyWith(status: AuthStatus.error));
+      }
+    } catch (error, stacktrace) {
+      log(stacktrace.toString());
+      emit(state.copyWith(status: AuthStatus.error));
+    }
+  }
+
+  // get user data
+  Future<Map<String, dynamic>> getUserData(String uid) async {
+    numEvents += 1;
+    log('$numEvents');
+    final CollectionReference userCollection =
+        FirebaseFirestore.instance.collection('Users');
+    DocumentSnapshot<Map<String, dynamic>> snapshot = await userCollection
+        .doc(uid)
+        .get() as DocumentSnapshot<Map<String, dynamic>>;
+    Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+    if (!data.containsKey('up_votes')) {
+      //create new up vote field for user in database
+      await userCollection.doc(uid).update({
+        'up_votes': [],
+      });
+      data['up_votes'] = [];
+    }
+    return data;
   }
 }

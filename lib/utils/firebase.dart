@@ -34,25 +34,45 @@ class FirebaseService {
     });
   }
 
-  // get first and last names
-  Future<List<String>> getFirstAndLastName() async {
+  //Updates user in database
+  Future updateUserUpVotes(String id) async {
+    numWrites += 1;
+    log("numWrites: " + numWrites.toString());
     numReads += 1;
     log("numReads: " + numReads.toString());
     DocumentSnapshot<Map<String, dynamic>> snapshot = await userCollection
         .doc(uid)
         .get() as DocumentSnapshot<Map<String, dynamic>>;
     Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
-    if (data.containsKey('first_name') && data.containsKey('last_name')) {
-      final String firstName = data['first_name'] as String;
-      final String lastName = data['last_name'] as String;
-      List<String> myList = [];
-      myList.add(firstName);
-      myList.add(lastName);
-      return myList;
-    } else {
-      List<String> empty = [];
-      return empty;
+    if (data.containsKey('up_votes')) {
+      final List<String> upVotes = data['up_votes'] as List<String>;
+      upVotes.add(id);
+      return await userCollection.doc(uid).update({
+        'up_votes': upVotes,
+      });
     }
+    final upVotes = [id];
+    return await userCollection.doc(uid).update({
+      'up_votes': upVotes,
+    });
+  }
+
+  // get user data
+  Future<Map<String, dynamic>> getUserData() async {
+    numReads += 1;
+    log("numReads: " + numReads.toString());
+    DocumentSnapshot<Map<String, dynamic>> snapshot = await userCollection
+        .doc(uid)
+        .get() as DocumentSnapshot<Map<String, dynamic>>;
+    Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+    if (!data.containsKey('up_votes')) {
+      //create new up vote field for user in database
+      await userCollection.doc(uid).update({
+        'up_votes': [],
+      });
+      data['up_votes'] = [];
+    }
+    return data;
   }
 
   //Creates new marker in database

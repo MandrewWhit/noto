@@ -24,18 +24,27 @@ class AuthState extends Equatable {
       this.firstname,
       this.lastname,
       this.profilePicUrl,
+      this.upVotes,
       required this.emailVerified});
 
   final User? user;
   final String? firstname;
   final String? lastname;
   final String? profilePicUrl;
+  final List<String>? upVotes;
   final AuthStatus status;
   bool emailVerified;
 
   @override
-  List<Object?> get props =>
-      [status, user, firstname, lastname, profilePicUrl, emailVerified];
+  List<Object?> get props => [
+        status,
+        user,
+        firstname,
+        lastname,
+        profilePicUrl,
+        upVotes,
+        emailVerified
+      ];
 
   AuthState copyWith(
       {AuthStatus? status,
@@ -43,6 +52,7 @@ class AuthState extends Equatable {
       String? firstname,
       String? lastname,
       String? profilePicUrl,
+      List<String>? upVotes,
       bool? emailVerified}) {
     return AuthState(
         user: user ?? this.user,
@@ -50,6 +60,7 @@ class AuthState extends Equatable {
         firstname: firstname ?? this.firstname,
         lastname: lastname ?? this.lastname,
         profilePicUrl: profilePicUrl ?? this.profilePicUrl,
+        upVotes: upVotes ?? this.upVotes,
         emailVerified: emailVerified ?? this.emailVerified);
   }
 }

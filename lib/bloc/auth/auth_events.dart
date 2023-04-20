@@ -122,3 +122,27 @@ class VerifyEmailEvent extends AuthEvent {
   @override
   String toString() => 'Verify Email Event';
 }
+
+class UpVoteMarkerEvent extends AuthEvent {
+  const UpVoteMarkerEvent({required this.id});
+
+  final String id;
+
+  @override
+  List<Object> get props => [id];
+
+  @override
+  String toString() => 'Up Vote Marker Event';
+}
+
+class DownVoteMarkerEvent extends AuthEvent {
+  const DownVoteMarkerEvent({required this.id});
+
+  final String id;
+
+  @override
+  List<Object> get props => [id];
+
+  @override
+  String toString() => 'Down Vote Marker Event';
+}
