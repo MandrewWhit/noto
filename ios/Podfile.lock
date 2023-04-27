@@ -596,6 +596,8 @@ PODS:
     - abseil/base/base_internal
     - abseil/base/config
     - abseil/meta/type_traits
+  - background_fetch (1.1.5):
+    - Flutter
   - BoringSSL-GRPC (0.0.24):
     - BoringSSL-GRPC/Implementation (= 0.0.24)
     - BoringSSL-GRPC/Interface (= 0.0.24)
@@ -606,6 +608,9 @@ PODS:
     - Firebase/Firestore (= 9.6.0)
     - firebase_core
     - Flutter
+  - CocoaLumberjack (3.7.4):
+    - CocoaLumberjack/Core (= 3.7.4)
+  - CocoaLumberjack/Core (3.7.4)
   - Firebase/Analytics (9.6.0):
     - Firebase/Core
   - Firebase/Auth (9.6.0):
@@ -704,12 +709,17 @@ PODS:
     - FirebaseCore (~> 9.0)
     - GTMSessionFetcher/Core (< 3.0, >= 1.7)
   - Flutter (1.0.0)
+  - flutter_background_geolocation (4.10.3):
+    - CocoaLumberjack (~> 3.7.2)
+    - Flutter
   - flutter_blue_plus (0.0.1):
     - Flutter
     - flutter_blue_plus/Protos (= 0.0.1)
   - flutter_blue_plus/Protos (0.0.1):
     - Flutter
     - Protobuf (~> 3.11)
+  - flutter_local_notifications (0.0.1):
+    - Flutter
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
@@ -840,13 +850,16 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
+  - background_fetch (from `.symlinks/plugins/background_fetch/ios`)
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - firebase_analytics (from `.symlinks/plugins/firebase_analytics/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_storage (from `.symlinks/plugins/firebase_storage/ios`)
   - Flutter (from `Flutter`)
+  - flutter_background_geolocation (from `.symlinks/plugins/flutter_background_geolocation/ios`)
   - flutter_blue_plus (from `.symlinks/plugins/flutter_blue_plus/ios`)
+  - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/ios`)
@@ -859,6 +872,7 @@ SPEC REPOS:
   trunk:
     - abseil
     - BoringSSL-GRPC
+    - CocoaLumberjack
     - Firebase
     - FirebaseAnalytics
     - FirebaseAppCheckInterop
@@ -886,6 +900,8 @@ SPEC REPOS:
     - Protobuf
 
 EXTERNAL SOURCES:
+  background_fetch:
+    :path: ".symlinks/plugins/background_fetch/ios"
   cloud_firestore:
     :path: ".symlinks/plugins/cloud_firestore/ios"
   firebase_analytics:
@@ -898,8 +914,12 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_storage/ios"
   Flutter:
     :path: Flutter
+  flutter_background_geolocation:
+    :path: ".symlinks/plugins/flutter_background_geolocation/ios"
   flutter_blue_plus:
     :path: ".symlinks/plugins/flutter_blue_plus/ios"
+  flutter_local_notifications:
+    :path: ".symlinks/plugins/flutter_local_notifications/ios"
   geolocator_apple:
     :path: ".symlinks/plugins/geolocator_apple/ios"
   image_picker_ios:
@@ -917,8 +937,10 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   abseil: ebe5b5529fb05d93a8bdb7951607be08b7fa71bc
+  background_fetch: 9a9963128952bfdd197e21786983c7c7a30e1478
   BoringSSL-GRPC: 3175b25143e648463a56daeaaa499c6cb86dad33
   cloud_firestore: 49d69be2b924677f2974d8b38acc705c9908c09b
+  CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
   Firebase: 5ae8b7cf8efce559a653aef0ad95bab3f427c351
   firebase_analytics: 9937a91df25cce5b0ee19eaf65277ff8bf0f88e5
   firebase_auth: 07a4db69cfa447ac42cb7faa560fc100708b707c
@@ -937,7 +959,9 @@ SPEC CHECKSUMS:
   FirebaseStorage: 1fead543a1f441c3b434c1c9f12560dd82f8b568
   FirebaseStorageInternal: 81d8a597324ccd06c41a43c5700bc1185a2fc328
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  flutter_background_geolocation: 4c05b5f42effaecf7fe84d17d34fbaa4c7397009
   flutter_blue_plus: 6787777145d615de01828f3a9fa423c3c702f0b3
+  flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   geolocator_apple: cc556e6844d508c95df1e87e3ea6fa4e58c50401
   GoogleAppMeasurement: 6de2b1a69e4326eb82ee05d138f6a5cb7311bcb1

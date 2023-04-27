@@ -4,6 +4,7 @@ import 'package:nowtowv1/bloc/auth/auth_bloc.dart';
 import 'package:nowtowv1/bloc/auth/auth_events.dart';
 import 'package:nowtowv1/bloc/auth/auth_state.dart';
 import 'package:nowtowv1/pages/home/home.dart';
+import 'package:nowtowv1/pages/splash_screen/splash_screen.dart';
 import 'package:nowtowv1/pages/validate_email/validate_email.dart';
 
 class VerifyWrapper extends StatefulWidget {
@@ -22,7 +23,7 @@ class _VerifyWrapperState extends State<VerifyWrapper> {
     if (authBloc.authService.isEmailVerified() != null) {
       return authBloc.state.emailVerified ||
               authBloc.state.status == AuthStatus.initial
-          ? HomePage()
+          ? SplashScreen()
           : MaterialApp(
               debugShowCheckedModeBanner: false,
               title: 'Noto',

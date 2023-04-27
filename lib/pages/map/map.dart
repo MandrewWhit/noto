@@ -65,9 +65,9 @@ class _TowMapState extends State<TowMap> {
 
   @override
   Widget build(BuildContext context) {
-    BlocProvider.of<MarkersBloc>(context).add(GetMarkersEvent(
-        location:
-            LocationService.currentLocation ?? LatLng(30.2672, -97.7431)));
+    // BlocProvider.of<MarkersBloc>(context).add(GetMarkersEvent(
+    //     location:
+    //         LocationService.currentLocation ?? LatLng(30.2672, -97.7431)));
     return BlocBuilder<MarkersBloc, MarkersState>(
       bloc: BlocProvider.of<MarkersBloc>(context),
       builder: (context, state) {

@@ -14,7 +14,7 @@ class LocationService {
   static StreamSubscription<Position>? positionStream;
   static LatLng? currentLocation;
 
-  static void initializeLoctionService() async {
+  static Future<void> initializeLoctionService() async {
     if (defaultTargetPlatform == TargetPlatform.android) {
       locationSettings = AndroidSettings(
           accuracy: LocationAccuracy.high,

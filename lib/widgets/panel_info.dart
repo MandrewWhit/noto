@@ -87,51 +87,56 @@ class _PanelInfoState extends State<PanelInfo> {
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.only(right: 20),
-                    child: GestureDetector(
-                      child: LikeButton(
-                        isLiked: _isLiked,
-                        size: buttonSize,
-                        // circleColor: const CircleColor(
-                        //     start: Color(0xff00ddff), end: Color(0xff0099cc)),
-                        circleColor: const CircleColor(
-                            start: Colors.redAccent, end: Colors.indigo),
-                        bubblesColor: const BubblesColor(
-                          dotPrimaryColor: Color(0xff33b5e5),
-                          dotSecondaryColor: Color(0xff0099cc),
-                        ),
-                        likeBuilder: (bool isLiked) {
-                          return Icon(
-                            Icons.favorite,
-                            color: isLiked ? Colors.indigoAccent : Colors.grey,
-                            size: buttonSize,
-                          );
-                        },
-                        likeCount: state.marker?.upVotes ?? 0,
-                        onTap: (bool isLiked) {
-                          setState(() {
-                            _isLiked = !isLiked;
-                          });
-                          return onLikeButtonTapped(
-                              isLiked, state.marker ?? CustomMarker());
-                        },
-                        countBuilder: (int? count, bool isLiked, String text) {
-                          var color =
-                              isLiked ? Colors.indigoAccent : Colors.grey;
-                          Widget result;
-                          if (count == 0) {
-                            result = Text(
-                              "like",
-                              style: TextStyle(color: color),
-                            );
-                          } else
-                            result = Text(
-                              text,
-                              style: TextStyle(color: color),
-                            );
-                          return result;
-                        },
-                      ),
-                    ),
+                    child: name == ""
+                        ? Container()
+                        : GestureDetector(
+                            child: LikeButton(
+                              isLiked: _isLiked,
+                              size: buttonSize,
+                              // circleColor: const CircleColor(
+                              //     start: Color(0xff00ddff), end: Color(0xff0099cc)),
+                              circleColor: const CircleColor(
+                                  start: Colors.redAccent, end: Colors.indigo),
+                              bubblesColor: const BubblesColor(
+                                dotPrimaryColor: Color(0xff33b5e5),
+                                dotSecondaryColor: Color(0xff0099cc),
+                              ),
+                              likeBuilder: (bool isLiked) {
+                                return Icon(
+                                  Icons.favorite,
+                                  color: isLiked
+                                      ? Colors.indigoAccent
+                                      : Colors.grey,
+                                  size: buttonSize,
+                                );
+                              },
+                              likeCount: state.marker?.upVotes ?? 0,
+                              onTap: (bool isLiked) {
+                                setState(() {
+                                  _isLiked = !isLiked;
+                                });
+                                return onLikeButtonTapped(
+                                    isLiked, state.marker ?? CustomMarker());
+                              },
+                              countBuilder:
+                                  (int? count, bool isLiked, String text) {
+                                var color =
+                                    isLiked ? Colors.indigoAccent : Colors.grey;
+                                Widget result;
+                                if (count == 0) {
+                                  result = Text(
+                                    "like",
+                                    style: TextStyle(color: color),
+                                  );
+                                } else
+                                  result = Text(
+                                    text,
+                                    style: TextStyle(color: color),
+                                  );
+                                return result;
+                              },
+                            ),
+                          ),
                   )
                 ],
               ),
@@ -198,6 +203,14 @@ class _PanelInfoState extends State<PanelInfo> {
                     )
                   : Container(),
               SignOutButton(),
+              SizedBox(height: 24.0),
+              Padding(
+                  padding: EdgeInsets.only(left: 8, right: 8),
+                  child: Center(
+                      child: Text(
+                    "Questions or Feedback? Call Us...\n806-922-1112",
+                    style: TextStyle(fontSize: 18, color: Colors.indigo),
+                  ))),
               SizedBox(height: 24.0),
               // Center(
               //   child: Text(

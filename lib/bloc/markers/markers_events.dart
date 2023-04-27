@@ -23,6 +23,18 @@ class CreateMarkerEvent extends MarkersEvent {
   String toString() => 'Create Marker Event';
 }
 
+class AddGeofenceEvent extends MarkersEvent {
+  const AddGeofenceEvent({required this.location});
+
+  final LatLng location;
+
+  @override
+  List<Object> get props => [location];
+
+  @override
+  String toString() => 'Add Geofence Event';
+}
+
 class GetMarkersEvent extends MarkersEvent {
   GetMarkersEvent({required this.location});
 

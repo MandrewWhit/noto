@@ -30,8 +30,12 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+    <key>ITSAppUsesNonExemptEncryption</key>
+    <false/>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>This app needs access to location when in the background.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>This app needs access to motion when in the background to alert users when entering a reported tow away zone.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app needs access to location when open.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

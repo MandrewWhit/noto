@@ -23,7 +23,7 @@ class UpdateMarkerDialog {
         cancelBtnText: 'Delete',
         cancelBtnTextStyle:
             TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-        customAsset: 'assets/notebook.gif',
+        customAsset: 'assets/car.gif',
         widget: TextFormField(
           minLines: 4,
           maxLines: null,

@@ -68,7 +68,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _fabHeight = _initFabHeight;
-    LocationService.initializeLoctionService();
   }
 
   @override

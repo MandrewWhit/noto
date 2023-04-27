@@ -68,6 +68,8 @@ dependencies:
   geolocator_apple: ^2.2.5
   shimmer: ^2.0.0
   like_button: ^2.0.5
+  flutter_background_geolocation: ^4.10.3
+  flutter_local_notifications: ^8.2.0
 
 dependency_overrides:
   intl: ^0.17.0-nullsafety.2
