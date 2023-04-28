@@ -121,7 +121,8 @@ class MarkersBloc extends Bloc<MarkersEvent, MarkersState> {
       List<CustomMarker> newMarkers =
           await service.getMarkersFromFirebase(event.location) ?? [];
       for (int i = 0; i < newMarkers.length; i++) {
-        _addGeofence(newMarkers[i].lat, newMarkers[i].lng);
+        _addGeofence(
+            newMarkers[i].lat, newMarkers[i].lng, newMarkers[i].id ?? "");
       }
 
       // set background geolocation events
@@ -139,7 +140,7 @@ class MarkersBloc extends Bloc<MarkersEvent, MarkersState> {
           .then((bg.State state) {
         if (!state.enabled) {
           // start the plugin
-          // bg.BackgroundGeolocation.start();
+          bg.BackgroundGeolocation.start();
 
           // start geofences only
           bg.BackgroundGeolocation.startGeofences();
@@ -154,9 +155,9 @@ class MarkersBloc extends Bloc<MarkersEvent, MarkersState> {
     }
   }
 
-  void _addGeofence(double lat, double lng) {
+  void _addGeofence(double lat, double lng, String id) {
     bg.BackgroundGeolocation.addGeofence(bg.Geofence(
-      identifier: 'HOME',
+      identifier: id,
       radius: 150,
       latitude: lat,
       longitude: lng,
@@ -171,13 +172,25 @@ class MarkersBloc extends Bloc<MarkersEvent, MarkersState> {
     });
   }
 
-  void _onGeofence(bg.GeofenceEvent event) {
+  void _onGeofence(bg.GeofenceEvent event) async {
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         FlutterLocalNotificationsPlugin();
-    print('onGeofence $event');
-    var platformChannelSpecifics =
-        const NotificationDetails(iOS: IOSNotificationDetails());
-    flutterLocalNotificationsPlugin
+    const IOSInitializationSettings initializationSettingsIOS =
+        IOSInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: false,
+      requestSoundPermission: false,
+    );
+    const InitializationSettings initializationSettings =
+        InitializationSettings(iOS: initializationSettingsIOS);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    var platformChannelSpecifics = const NotificationDetails(
+        iOS: IOSNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    ));
+    await flutterLocalNotificationsPlugin
         .show(0, 'Tow Trap Nearby!', 'Open the Noto app for details',
             platformChannelSpecifics)
         .then((result) {})

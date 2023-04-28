@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:nowtowv1/bloc/markers/markers_bloc.dart';
 import 'package:nowtowv1/bloc/markers/markers_events.dart';
@@ -40,13 +43,20 @@ class _SplashScreenState extends State<SplashScreen> {
                   debugShowCheckedModeBanner: false,
                   title: 'Noto',
                   theme: ThemeData(
+                    scaffoldBackgroundColor: Colors.white,
                     primaryColor: Colors.indigo,
                     primarySwatch: Colors.indigo,
                   ),
                   initialRoute: '/',
                   home: Scaffold(
                     body: Center(
-                      child: Image.asset('assets/drive-blue.gif'),
+                      child: Padding(
+                          padding: EdgeInsets.only(left: 10, right: 10),
+                          child: Image.asset(
+                            'assets/loading.gif',
+                            height: 200,
+                            width: 200,
+                          )),
                     ),
                   ),
                 );
