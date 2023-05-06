@@ -1,14 +1,19 @@
-import 'dart:developer';
+import 'dart:developer' as dev;
+import 'dart:math';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:nowtowv1/bloc/markers/markers_events.dart';
 import 'package:nowtowv1/bloc/markers/markers_state.dart';
+import 'package:nowtowv1/data_structures/custom_stack.dart';
 import 'package:nowtowv1/models/marker.dart';
 import 'package:nowtowv1/utils/firebase.dart';
 import 'package:nowtowv1/utils/firebase_storage.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
+import 'package:nowtowv1/utils/location_service.dart';
 
 class MarkersBloc extends Bloc<MarkersEvent, MarkersState> {
   MarkersBloc({required this.service, required this.storage})
@@ -48,7 +53,7 @@ class MarkersBloc extends Bloc<MarkersEvent, MarkersState> {
         state.copyWith(status: MarkersStatus.success, markers: newMarkers),
       );
     } catch (error, stacktrace) {
-      log(stacktrace.toString());
+      dev.log(stacktrace.toString());
       emit(state.copyWith(status: MarkersStatus.error));
     }
   }
@@ -64,7 +69,7 @@ class MarkersBloc extends Bloc<MarkersEvent, MarkersState> {
         state.copyWith(status: MarkersStatus.success, markers: newMarkers),
       );
     } catch (error, stacktrace) {
-      log(stacktrace.toString());
+      dev.log(stacktrace.toString());
       emit(state.copyWith(status: MarkersStatus.error));
     }
   }
@@ -85,7 +90,7 @@ class MarkersBloc extends Bloc<MarkersEvent, MarkersState> {
         state.copyWith(status: MarkersStatus.success, markers: newMarkers),
       );
     } catch (error, stacktrace) {
-      log(stacktrace.toString());
+      dev.log(stacktrace.toString());
       emit(state.copyWith(status: MarkersStatus.error));
     }
   }
@@ -101,6 +106,7 @@ class MarkersBloc extends Bloc<MarkersEvent, MarkersState> {
           if (oldMarkers[i].id == event.ids[j]) {
             newMarkers.remove(oldMarkers[i]);
             service.deleteMarker(event.ids[j]);
+            _deleteGeofence(event.ids[j]);
             break;
           }
         }
@@ -109,7 +115,7 @@ class MarkersBloc extends Bloc<MarkersEvent, MarkersState> {
         state.copyWith(status: MarkersStatus.success, markers: newMarkers),
       );
     } catch (error, stacktrace) {
-      log(stacktrace.toString());
+      dev.log(stacktrace.toString());
       emit(state.copyWith(status: MarkersStatus.error));
     }
   }
@@ -146,11 +152,18 @@ class MarkersBloc extends Bloc<MarkersEvent, MarkersState> {
           bg.BackgroundGeolocation.startGeofences();
         }
       });
+
+      List<CustomMarker> nearbyMarkers = getNearbyMarkers(newMarkers);
+      List<Image> nearbyImages = await getNearbyImages(nearbyMarkers);
       emit(
-        state.copyWith(status: MarkersStatus.success, markers: newMarkers),
+        state.copyWith(
+            status: MarkersStatus.success,
+            markers: newMarkers,
+            nearbyMarkers: nearbyMarkers,
+            nearbyImages: nearbyImages),
       );
     } catch (error, stacktrace) {
-      log(stacktrace.toString());
+      dev.log(stacktrace.toString());
       emit(state.copyWith(status: MarkersStatus.error));
     }
   }
@@ -166,10 +179,14 @@ class MarkersBloc extends Bloc<MarkersEvent, MarkersState> {
       notifyOnDwell: false,
       loiteringDelay: 30000, // 30 seconds
     )).then((bool success) {
-      log('[addGeofence] success with $lat and $lng');
+      dev.log('[addGeofence] success with $lat and $lng');
     }).catchError((error) {
-      log('[addGeofence] FAILURE: $error');
+      dev.log('[addGeofence] FAILURE: $error');
     });
+  }
+
+  void _deleteGeofence(String id) {
+    bg.BackgroundGeolocation.destroyLocation(id);
   }
 
   void _onGeofence(bg.GeofenceEvent event) async {
@@ -197,5 +214,56 @@ class MarkersBloc extends Bloc<MarkersEvent, MarkersState> {
         .catchError((onError) {
       print('[flutterLocalNotificationsPlugin.show] ERROR: $onError');
     });
+  }
+
+  List<CustomMarker> getNearbyMarkers(List<CustomMarker> allMarkers) {
+    MyStack<CustomMarker> nearbyMarkers = MyStack<CustomMarker>();
+    MyStack<double> nearbyMarkersDist = MyStack<double>();
+    if (LocationService.currentLocation != null) {
+      if (allMarkers != null) {
+        LatLng? userLoc = LocationService.currentLocation;
+        for (int i = 0; i < allMarkers!.length; i++) {
+          bool notAlreadyAdded = true;
+          var newDistance = sqrt(
+              pow((userLoc!.latitude - allMarkers![i].lat), 2) +
+                  pow((userLoc.longitude - allMarkers![i].lng), 2));
+          for (int j = 0; j < nearbyMarkers.getSize; j++) {
+            if (newDistance < nearbyMarkersDist.getAt(j)) {
+              nearbyMarkers.insertAt(j, allMarkers![i]);
+              nearbyMarkersDist.insertAt(j, newDistance);
+              notAlreadyAdded = false;
+              break;
+            }
+          }
+          if (nearbyMarkers.getSize < 5 && notAlreadyAdded) {
+            nearbyMarkers.pushEnd(allMarkers![i]);
+            nearbyMarkersDist.pushEnd(newDistance);
+          }
+        }
+      }
+    }
+    return nearbyMarkers.toList;
+  }
+
+  Future<List<Image>> getNearbyImages(List<CustomMarker> nearbyMarkers) async {
+    List<Image> nearbyImages = [];
+    for (int i = 0; i < nearbyMarkers.length; i++) {
+      if (nearbyMarkers[i].imagePaths != null) {
+        if (nearbyMarkers[i].imagePaths!.isNotEmpty) {
+          var url =
+              await storage.getImage(nearbyMarkers[i].imagePaths![0]) ?? "";
+          nearbyImages.add(Image.network(
+            url,
+            width: 500,
+            height: 500,
+          ));
+        } else {
+          nearbyImages.add(Image.asset('assets/clip-car.png'));
+        }
+      } else {
+        nearbyImages.add(Image.asset('assets/clip-car.png'));
+      }
+    }
+    return nearbyImages;
   }
 }

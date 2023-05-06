@@ -26,7 +26,9 @@ class OverviewState extends Equatable {
       this.marker,
       this.panelHeightClosed,
       this.panelHeightOpened,
-      this.image});
+      this.image,
+      this.explore,
+      this.isDraggable});
 
   final CustomMarker? marker;
   final OverviewStatus status;
@@ -34,10 +36,20 @@ class OverviewState extends Equatable {
   final double? panelHeightClosed;
   final double? panelHeightOpened;
   final Image? image;
+  final bool? explore;
+  final bool? isDraggable;
 
   @override
-  List<Object?> get props =>
-      [marker, opacity, status, panelHeightClosed, panelHeightOpened, image];
+  List<Object?> get props => [
+        marker,
+        opacity,
+        status,
+        panelHeightClosed,
+        panelHeightOpened,
+        image,
+        explore,
+        isDraggable,
+      ];
 
   OverviewState copyWith(
       {OverviewStatus? status,
@@ -45,13 +57,17 @@ class OverviewState extends Equatable {
       bool? opacity,
       double? panelHeightClosed,
       double? panelHeightOpened,
-      Image? image}) {
+      Image? image,
+      bool? explore,
+      bool? isDraggable}) {
     return OverviewState(
         status: status ?? this.status,
         marker: marker ?? this.marker,
         opacity: opacity ?? this.opacity,
         panelHeightClosed: panelHeightClosed ?? this.panelHeightClosed,
         panelHeightOpened: panelHeightOpened ?? this.panelHeightOpened,
-        image: image);
+        image: image ?? this.image,
+        explore: explore ?? this.explore,
+        isDraggable: isDraggable ?? this.isDraggable);
   }
 }

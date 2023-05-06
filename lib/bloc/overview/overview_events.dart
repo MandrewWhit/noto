@@ -18,6 +18,30 @@ class InitOverviewEvent extends OverviewEvent {
   String toString() => 'Init Event';
 }
 
+class ExploreEvent extends OverviewEvent {
+  const ExploreEvent({required this.explore});
+
+  final bool explore;
+
+  @override
+  List<Object> get props => [explore];
+
+  @override
+  String toString() => 'Explore Event';
+}
+
+class SetDraggableEvent extends OverviewEvent {
+  const SetDraggableEvent({required this.isDraggable});
+
+  final bool isDraggable;
+
+  @override
+  List<Object> get props => [isDraggable];
+
+  @override
+  String toString() => 'Set Draggable Event';
+}
+
 class SetMarkerEvent extends OverviewEvent {
   const SetMarkerEvent({required this.marker});
 

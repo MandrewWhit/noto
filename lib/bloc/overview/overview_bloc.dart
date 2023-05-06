@@ -15,6 +15,8 @@ class OverviewBloc extends Bloc<OverviewEvent, OverviewState> {
     on<InitOverviewEvent>(_mapInitOverviewEventToState);
     on<SetMarkerEvent>(_mapSetMarkerEventToState);
     on<ToggleOpacityEvent>(_mapToggleOpacityEventToState);
+    on<ExploreEvent>(_mapExploreOverviewEventToState);
+    on<SetDraggableEvent>(_mapSetIsDraggableEventToState);
   }
   Storage storage = Storage();
 
@@ -24,9 +26,24 @@ class OverviewBloc extends Bloc<OverviewEvent, OverviewState> {
     try {
       emit(
         state.copyWith(
-            status: OverviewStatus.success,
-            opacity: false,
-            panelHeightClosed: 0),
+          status: OverviewStatus.success,
+          opacity: false,
+          panelHeightClosed: 0,
+          isDraggable: true,
+        ),
+      );
+    } catch (error, stacktrace) {
+      log(stacktrace.toString());
+      emit(state.copyWith(status: OverviewStatus.error));
+    }
+  }
+
+  void _mapExploreOverviewEventToState(
+      ExploreEvent event, Emitter<OverviewState> emit) async {
+    emit(state.copyWith(status: OverviewStatus.loading));
+    try {
+      emit(
+        state.copyWith(status: OverviewStatus.success, explore: event.explore),
       );
     } catch (error, stacktrace) {
       log(stacktrace.toString());
@@ -36,7 +53,8 @@ class OverviewBloc extends Bloc<OverviewEvent, OverviewState> {
 
   void _mapSetMarkerEventToState(
       SetMarkerEvent event, Emitter<OverviewState> emit) async {
-    emit(state.copyWith(status: OverviewStatus.loading));
+    emit(state.copyWith(
+        status: OverviewStatus.loading, marker: null, image: null));
     try {
       Image? image;
       if (event.marker.imagePaths != null) {
@@ -50,7 +68,22 @@ class OverviewBloc extends Bloc<OverviewEvent, OverviewState> {
             status: OverviewStatus.success,
             opacity: true,
             marker: event.marker,
-            image: image),
+            image: image,
+            explore: false),
+      );
+    } catch (error, stacktrace) {
+      log(stacktrace.toString());
+      emit(state.copyWith(status: OverviewStatus.error));
+    }
+  }
+
+  void _mapSetIsDraggableEventToState(
+      SetDraggableEvent event, Emitter<OverviewState> emit) async {
+    emit(state.copyWith(status: OverviewStatus.loading));
+    try {
+      emit(
+        state.copyWith(
+            status: OverviewStatus.success, isDraggable: event.isDraggable),
       );
     } catch (error, stacktrace) {
       log(stacktrace.toString());

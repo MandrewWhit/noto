@@ -87,6 +87,7 @@ class _HomePageState extends State<HomePage> {
                 bloc: BlocProvider.of<OverviewBloc>(context),
                 builder: (context, state) {
                   return SlidingUpPanel(
+                    isDraggable: state.isDraggable ?? true,
                     maxHeight: state.panelHeightOpened ?? 0,
                     minHeight: state.panelHeightClosed ?? 0,
                     parallaxEnabled: true,

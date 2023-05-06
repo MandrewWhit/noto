@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -11,6 +13,7 @@ import 'package:nowtowv1/bloc/markers/markers_events.dart';
 import 'package:nowtowv1/bloc/markers/markers_state.dart';
 import 'package:nowtowv1/bloc/overview/overview_bloc.dart';
 import 'package:nowtowv1/bloc/overview/overview_events.dart';
+import 'package:nowtowv1/data_structures/custom_stack.dart';
 import 'package:nowtowv1/models/marker.dart';
 import 'package:nowtowv1/utils/location_service.dart';
 import 'package:nowtowv1/widgets/add_marker.dart';
@@ -32,6 +35,9 @@ class _TowMapState extends State<TowMap> {
   @override
   void initState() {
     super.initState();
+    BlocProvider.of<OverviewBloc>(context)
+        .add(const ExploreEvent(explore: true));
+    BlocProvider.of<OverviewBloc>(context).add(InitOverviewEvent());
   }
 
   List<Marker> getMarkers(BuildContext context) {
@@ -71,6 +77,31 @@ class _TowMapState extends State<TowMap> {
     return BlocBuilder<MarkersBloc, MarkersState>(
       bloc: BlocProvider.of<MarkersBloc>(context),
       builder: (context, state) {
+        MyStack<CustomMarker> nearbyMarkers = MyStack<CustomMarker>();
+        MyStack<double> nearbyMarkersDist = MyStack<double>();
+        if (LocationService.currentLocation != null) {
+          if (state.markers != null) {
+            LatLng? userLoc = LocationService.currentLocation;
+            for (int i = 0; i < state.markers!.length; i++) {
+              var newDistance = sqrt(
+                  pow((userLoc!.latitude - state.markers![i].lat), 2) +
+                      pow((userLoc.longitude - state.markers![i].lng), 2));
+              for (int j = 0; j < nearbyMarkers.getSize; j++) {
+                if (newDistance < nearbyMarkersDist.getAt(j)) {
+                  nearbyMarkers.insertAt(j, state.markers![i]);
+                  nearbyMarkersDist.insertAt(j, newDistance);
+                  break;
+                }
+              }
+              if (nearbyMarkers.getSize < 5) {
+                nearbyMarkers.pushEnd(state.markers![i]);
+                nearbyMarkersDist.pushEnd(newDistance);
+              }
+            }
+          }
+        }
+        BlocProvider.of<OverviewBloc>(context)
+            .add(ToggleOpacityEvent(opacity: true, context: context));
         List<Marker> towMarkers = getMarkers(context);
         return LocationService.currentLocation == null
             ? GenericShimmer()
@@ -102,8 +133,8 @@ class _TowMapState extends State<TowMap> {
                     // }
                     bool markerTap = false;
                     if (!markerTap) {
-                      BlocProvider.of<OverviewBloc>(context).add(
-                          ToggleOpacityEvent(opacity: false, context: context));
+                      //BlocProvider.of<OverviewBloc>(context).add(
+                      //    ToggleOpacityEvent(opacity: false, context: context));
                       //NewMarkerDialog.showNewMarkerDialog(context, point);
                       var dialog = AddMarkerDialog();
                       dialog.showAddMarkerDialog(context, point);

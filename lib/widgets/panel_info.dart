@@ -9,6 +9,7 @@ import 'package:nowtowv1/bloc/overview/overview_bloc.dart';
 import 'package:nowtowv1/bloc/overview/overview_events.dart';
 import 'package:nowtowv1/bloc/overview/overview_state.dart';
 import 'package:nowtowv1/models/marker.dart';
+import 'package:nowtowv1/widgets/explore_panel_info.dart';
 import 'package:nowtowv1/widgets/generic_button.dart';
 import 'package:nowtowv1/widgets/greeting.dart';
 import 'package:nowtowv1/widgets/sign_out_button.dart';
@@ -58,171 +59,189 @@ class _PanelInfoState extends State<PanelInfo> {
               userMarker = true;
             }
           }
-          Widget image = Container();
+          Widget image = const Center(child: CircularProgressIndicator());
           if (state.image != null) {
             image = state.image as Widget;
           }
           String description = state.marker?.description ?? "";
           String name = state.marker?.name ?? "";
-          return ListView(
-            controller: widget.sc,
-            children: <Widget>[
-              SizedBox(
-                height: 12.0,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                    width: 30,
-                    height: 5,
-                    decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.all(Radius.circular(12.0))),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(right: 20),
-                    child: name == ""
-                        ? Container()
-                        : GestureDetector(
-                            child: LikeButton(
-                              isLiked: _isLiked,
-                              size: buttonSize,
-                              // circleColor: const CircleColor(
-                              //     start: Color(0xff00ddff), end: Color(0xff0099cc)),
-                              circleColor: const CircleColor(
-                                  start: Colors.redAccent, end: Colors.indigo),
-                              bubblesColor: const BubblesColor(
-                                dotPrimaryColor: Color(0xff33b5e5),
-                                dotSecondaryColor: Color(0xff0099cc),
+          bool explore = state.explore ?? false;
+          return explore
+              ? ExplorePanelInfo(
+                  nearbyMarkers:
+                      BlocProvider.of<MarkersBloc>(context).state.nearbyMarkers,
+                  nearbyImages:
+                      BlocProvider.of<MarkersBloc>(context).state.nearbyImages,
+                  sc: widget.sc,
+                )
+              : name == null
+                  ? const SizedBox(child: CircularProgressIndicator())
+                  : ListView(
+                      controller: widget.sc,
+                      children: <Widget>[
+                        SizedBox(
+                          height: 12.0,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Container(
+                              width: 30,
+                              height: 5,
+                              decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(12.0))),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(right: 20),
+                              child: name == ""
+                                  ? Container()
+                                  : GestureDetector(
+                                      child: LikeButton(
+                                        isLiked: _isLiked,
+                                        size: buttonSize,
+                                        // circleColor: const CircleColor(
+                                        //     start: Color(0xff00ddff), end: Color(0xff0099cc)),
+                                        circleColor: const CircleColor(
+                                            start: Colors.redAccent,
+                                            end: Colors.indigo),
+                                        bubblesColor: const BubblesColor(
+                                          dotPrimaryColor: Color(0xff33b5e5),
+                                          dotSecondaryColor: Color(0xff0099cc),
+                                        ),
+                                        likeBuilder: (bool isLiked) {
+                                          return Icon(
+                                            Icons.favorite,
+                                            color: isLiked
+                                                ? Colors.indigoAccent
+                                                : Colors.grey,
+                                            size: buttonSize,
+                                          );
+                                        },
+                                        likeCount: state.marker?.upVotes ?? 0,
+                                        onTap: (bool isLiked) {
+                                          setState(() {
+                                            _isLiked = !isLiked;
+                                          });
+                                          return onLikeButtonTapped(isLiked,
+                                              state.marker ?? CustomMarker());
+                                        },
+                                        countBuilder: (int? count, bool isLiked,
+                                            String text) {
+                                          var color = isLiked
+                                              ? Colors.indigoAccent
+                                              : Colors.grey;
+                                          Widget result;
+                                          if (count == 0) {
+                                            result = Text(
+                                              "like",
+                                              style: TextStyle(color: color),
+                                            );
+                                          } else
+                                            result = Text(
+                                              text,
+                                              style: TextStyle(color: color),
+                                            );
+                                          return result;
+                                        },
+                                      ),
+                                    ),
+                            )
+                          ],
+                        ),
+                        Row(children: <Widget>[
+                          SizedBox(
+                            height: 75,
+                            width: MediaQuery.of(context).size.width * .75,
+                            child: Padding(
+                              padding: EdgeInsets.only(left: 10, right: 8),
+                              child: SizedBox.expand(
+                                // child: FittedBox(
+                                //fit: BoxFit.contain,
+                                child: name == ""
+                                    ? TitleShimmer()
+                                    : Text(
+                                        name,
+                                        style: const TextStyle(
+                                            color: Colors.indigo,
+                                            fontSize: 32,
+                                            fontWeight: FontWeight.bold),
+                                      ),
                               ),
-                              likeBuilder: (bool isLiked) {
-                                return Icon(
-                                  Icons.favorite,
-                                  color: isLiked
-                                      ? Colors.indigoAccent
-                                      : Colors.grey,
-                                  size: buttonSize,
-                                );
-                              },
-                              likeCount: state.marker?.upVotes ?? 0,
-                              onTap: (bool isLiked) {
-                                setState(() {
-                                  _isLiked = !isLiked;
-                                });
-                                return onLikeButtonTapped(
-                                    isLiked, state.marker ?? CustomMarker());
-                              },
-                              countBuilder:
-                                  (int? count, bool isLiked, String text) {
-                                var color =
-                                    isLiked ? Colors.indigoAccent : Colors.grey;
-                                Widget result;
-                                if (count == 0) {
-                                  result = Text(
-                                    "like",
-                                    style: TextStyle(color: color),
-                                  );
-                                } else
-                                  result = Text(
-                                    text,
-                                    style: TextStyle(color: color),
-                                  );
-                                return result;
-                              },
                             ),
                           ),
-                  )
-                ],
-              ),
-              Row(children: <Widget>[
-                SizedBox(
-                  height: 75,
-                  width: MediaQuery.of(context).size.width * .75,
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 10, right: 8),
-                    child: SizedBox.expand(
-                      // child: FittedBox(
-                      //fit: BoxFit.contain,
-                      child: name == ""
-                          ? TitleShimmer()
-                          : Text(
-                              name,
-                              style: const TextStyle(
-                                  color: Colors.indigo,
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                    ),
-                  ),
-                ),
-                //),
-              ]),
-              SizedBox(
-                height: 100.0,
-              ),
-              //Greeting(),
-              const Padding(
-                padding: EdgeInsets.only(left: 8, right: 8, bottom: 8),
-                child: Text(
-                  "Description",
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                ),
-              ),
-              Padding(
-                  padding: EdgeInsets.only(left: 8, right: 8),
-                  child: Text(
-                    description,
-                    style: TextStyle(fontSize: 18),
-                  )),
-              SizedBox(
-                height: 36.0,
-              ),
-              image,
-              SizedBox(
-                height: 36.0,
-              ),
-              //NewMarkerButton(),
-              userMarker
-                  ? Padding(
-                      padding: EdgeInsets.only(left: 8, right: 8),
-                      child: GestureDetector(
-                        child: GenericButton(text: "Update"),
-                        onTap: () {
-                          if (state.marker != null) {
-                            UpdateMarkerDialog.showUpdateMarkerDialog(
-                                context, state.marker ?? CustomMarker());
-                          }
-                        },
-                      ),
-                    )
-                  : Container(),
-              SignOutButton(),
-              SizedBox(height: 24.0),
-              Padding(
-                  padding: EdgeInsets.only(left: 8, right: 8),
-                  child: Center(
-                      child: Text(
-                    "Questions or Feedback? Call Us...\n806-922-1112",
-                    style: TextStyle(fontSize: 18, color: Colors.indigo),
-                  ))),
-              SizedBox(height: 24.0),
-              // Center(
-              //   child: Text(
-              //     "More Coming Soon...",
-              //     style: TextStyle(
-              //         color: Colors.indigo,
-              //         fontWeight: FontWeight.bold,
-              //         fontSize: 24),
-              //   ),
-              // ),
-            ],
-          );
+                          //),
+                        ]),
+                        SizedBox(
+                          height: 50.0,
+                        ),
+                        //Greeting(),
+                        const Padding(
+                          padding:
+                              EdgeInsets.only(left: 8, right: 8, bottom: 8),
+                          child: Text(
+                            "Description",
+                            style: TextStyle(
+                                fontSize: 22, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Padding(
+                            padding: EdgeInsets.only(left: 8, right: 8),
+                            child: Text(
+                              description,
+                              style: TextStyle(fontSize: 18),
+                            )),
+                        SizedBox(
+                          height: 36.0,
+                        ),
+                        image,
+                        SizedBox(
+                          height: 36.0,
+                        ),
+                        //NewMarkerButton(),
+                        userMarker
+                            ? Padding(
+                                padding: EdgeInsets.only(left: 8, right: 8),
+                                child: GestureDetector(
+                                  child: GenericButton(text: "Update"),
+                                  onTap: () {
+                                    if (state.marker != null) {
+                                      UpdateMarkerDialog.showUpdateMarkerDialog(
+                                          context,
+                                          state.marker ?? CustomMarker());
+                                    }
+                                  },
+                                ),
+                              )
+                            : Container(),
+                        SignOutButton(),
+                        SizedBox(height: 24.0),
+                        Padding(
+                            padding: EdgeInsets.only(left: 8, right: 8),
+                            child: Center(
+                                child: Text(
+                              "Questions or Feedback? Call Us...\n806-922-1112",
+                              style:
+                                  TextStyle(fontSize: 18, color: Colors.indigo),
+                            ))),
+                        SizedBox(height: 24.0),
+                        // Center(
+                        //   child: Text(
+                        //     "More Coming Soon...",
+                        //     style: TextStyle(
+                        //         color: Colors.indigo,
+                        //         fontWeight: FontWeight.bold,
+                        //         fontSize: 24),
+                        //   ),
+                        // ),
+                      ],
+                    );
         });
   }
 
