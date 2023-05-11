@@ -54,13 +54,18 @@ class OverviewBloc extends Bloc<OverviewEvent, OverviewState> {
   void _mapSetMarkerEventToState(
       SetMarkerEvent event, Emitter<OverviewState> emit) async {
     emit(state.copyWith(
-        status: OverviewStatus.loading, marker: null, image: null));
+        status: OverviewStatus.loading,
+        marker: CustomMarker(),
+        nullMarker: true));
     try {
       Image? image;
+      bool hasImage = true;
       if (event.marker.imagePaths != null) {
         if (event.marker.imagePaths!.isNotEmpty) {
           var url = await storage.getImage(event.marker.imagePaths![0]) ?? "";
           image = Image.network(url);
+        } else {
+          hasImage = false;
         }
       }
       emit(
@@ -69,7 +74,8 @@ class OverviewBloc extends Bloc<OverviewEvent, OverviewState> {
             opacity: true,
             marker: event.marker,
             image: image,
-            explore: false),
+            explore: false,
+            hasImage: hasImage),
       );
     } catch (error, stacktrace) {
       log(stacktrace.toString());

@@ -254,11 +254,15 @@ class MarkersBloc extends Bloc<MarkersEvent, MarkersState> {
               await storage.getImage(nearbyMarkers[i].imagePaths![0]) ?? "";
           nearbyImages.add(Image.network(
             url,
-            width: 500,
-            height: 500,
+            height: 1000,
+            width: 1000,
+            cacheWidth: 1000,
+            cacheHeight: 1000,
           ));
         } else {
-          nearbyImages.add(Image.asset('assets/clip-car.png'));
+          nearbyImages.add(Image.asset(
+            'assets/clip-car.png',
+          ));
         }
       } else {
         nearbyImages.add(Image.asset('assets/clip-car.png'));

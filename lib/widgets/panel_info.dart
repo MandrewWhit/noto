@@ -60,6 +60,10 @@ class _PanelInfoState extends State<PanelInfo> {
             }
           }
           Widget image = const Center(child: CircularProgressIndicator());
+          bool hasImage = state.hasImage ?? true;
+          if (!hasImage) {
+            image = Container();
+          }
           if (state.image != null) {
             image = state.image as Widget;
           }
@@ -99,7 +103,49 @@ class _PanelInfoState extends State<PanelInfo> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: <Widget>[
                             Padding(
-                              padding: const EdgeInsets.only(right: 20),
+                              padding: EdgeInsets.only(right: 10),
+                              child: GestureDetector(
+                                onTap: () {
+                                  BlocProvider.of<OverviewBloc>(context)
+                                      .add(const ExploreEvent(explore: true));
+                                },
+                                child: Icon(
+                                  Icons.close,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(children: <Widget>[
+                          SizedBox(
+                            height: 50,
+                            width: MediaQuery.of(context).size.width,
+                            child: Padding(
+                              padding: EdgeInsets.only(left: 10, right: 8),
+                              child: SizedBox.expand(
+                                // child: FittedBox(
+                                //fit: BoxFit.contain,
+                                child: name == ""
+                                    ? TitleShimmer()
+                                    : Text(
+                                        name,
+                                        style: const TextStyle(
+                                            color: Colors.indigo,
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                              ),
+                            ),
+                          ),
+                          //),
+                        ]),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 10, right: 20, top: 5),
                               child: name == ""
                                   ? Container()
                                   : GestureDetector(
@@ -155,29 +201,6 @@ class _PanelInfoState extends State<PanelInfo> {
                             )
                           ],
                         ),
-                        Row(children: <Widget>[
-                          SizedBox(
-                            height: 75,
-                            width: MediaQuery.of(context).size.width * .75,
-                            child: Padding(
-                              padding: EdgeInsets.only(left: 10, right: 8),
-                              child: SizedBox.expand(
-                                // child: FittedBox(
-                                //fit: BoxFit.contain,
-                                child: name == ""
-                                    ? TitleShimmer()
-                                    : Text(
-                                        name,
-                                        style: const TextStyle(
-                                            color: Colors.indigo,
-                                            fontSize: 32,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                              ),
-                            ),
-                          ),
-                          //),
-                        ]),
                         SizedBox(
                           height: 50.0,
                         ),

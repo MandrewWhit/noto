@@ -25,8 +25,6 @@ class _NearbyMarkerCardState extends State<NearbyMarkerCard> {
       child: GestureDetector(
         onTap: () {
           BlocProvider.of<OverviewBloc>(context)
-              .add(const SetDraggableEvent(isDraggable: true));
-          BlocProvider.of<OverviewBloc>(context)
               .add(SetMarkerEvent(marker: widget.marker));
           BlocProvider.of<OverviewBloc>(context)
               .add(const ExploreEvent(explore: false));
@@ -34,7 +32,7 @@ class _NearbyMarkerCardState extends State<NearbyMarkerCard> {
         child: Container(
           height: 225,
           child: Card(
-              color: Colors.indigo,
+              color: Colors.black,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
@@ -42,7 +40,6 @@ class _NearbyMarkerCardState extends State<NearbyMarkerCard> {
               margin: const EdgeInsets.all(10),
               child:
                   Stack(alignment: Alignment.bottomCenter, children: <Widget>[
-                //FittedBox(child: widget.nearbyImage, fit: BoxFit.fill),
                 widget.nearbyImage,
                 Container(
                   color: Colors.white,
