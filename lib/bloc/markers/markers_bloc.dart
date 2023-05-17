@@ -23,6 +23,7 @@ class MarkersBloc extends Bloc<MarkersEvent, MarkersState> {
     on<UpdateMarkerEvent>(_mapUpdateEventToState);
     on<DeleteMarkersEvent>(_mapDeleteEventToState);
     on<AddGeofenceEvent>(_mapAddGeofenceEventToState);
+    on<GetNearbyMarkersEvent>(_mapGetNearbyMarkersEventToState);
   }
   final FirebaseService service;
   final Storage storage;
@@ -159,6 +160,24 @@ class MarkersBloc extends Bloc<MarkersEvent, MarkersState> {
         state.copyWith(
             status: MarkersStatus.success,
             markers: newMarkers,
+            nearbyMarkers: nearbyMarkers,
+            nearbyImages: nearbyImages),
+      );
+    } catch (error, stacktrace) {
+      dev.log(stacktrace.toString());
+      emit(state.copyWith(status: MarkersStatus.error));
+    }
+  }
+
+  void _mapGetNearbyMarkersEventToState(
+      GetNearbyMarkersEvent event, Emitter<MarkersState> emit) async {
+    emit(state.copyWith(status: MarkersStatus.loading));
+    try {
+      List<CustomMarker> nearbyMarkers = getNearbyMarkers(state.markers ?? []);
+      List<Image> nearbyImages = await getNearbyImages(nearbyMarkers);
+      emit(
+        state.copyWith(
+            status: MarkersStatus.success,
             nearbyMarkers: nearbyMarkers,
             nearbyImages: nearbyImages),
       );

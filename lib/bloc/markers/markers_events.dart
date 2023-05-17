@@ -71,3 +71,15 @@ class UpdateMarkerEvent extends MarkersEvent {
   @override
   String toString() => 'Get Markers Event';
 }
+
+class GetNearbyMarkersEvent extends MarkersEvent {
+  GetNearbyMarkersEvent({required this.location});
+
+  final LatLng location;
+
+  @override
+  List<Object> get props => [location];
+
+  @override
+  String toString() => 'Get Nearby Markers Event';
+}

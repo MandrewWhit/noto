@@ -66,3 +66,15 @@ class ToggleOpacityEvent extends OverviewEvent {
   @override
   String toString() => 'Toggle Opacity Event';
 }
+
+class LikeButtonEvent extends OverviewEvent {
+  const LikeButtonEvent({required this.upVote});
+
+  final bool upVote;
+
+  @override
+  List<Object> get props => [upVote];
+
+  @override
+  String toString() => 'Like Button Event';
+}

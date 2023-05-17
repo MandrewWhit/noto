@@ -17,6 +17,7 @@ class OverviewBloc extends Bloc<OverviewEvent, OverviewState> {
     on<ToggleOpacityEvent>(_mapToggleOpacityEventToState);
     on<ExploreEvent>(_mapExploreOverviewEventToState);
     on<SetDraggableEvent>(_mapSetIsDraggableEventToState);
+    on<LikeButtonEvent>(_mapLikeButtonEventToState);
   }
   Storage storage = Storage();
 
@@ -113,6 +114,24 @@ class OverviewBloc extends Bloc<OverviewEvent, OverviewState> {
             opacity: event.opacity,
             panelHeightClosed: 0,
             panelHeightOpened: 0));
+      }
+    } catch (error, stacktrace) {
+      log(stacktrace.toString());
+      emit(state.copyWith(status: OverviewStatus.error));
+    }
+  }
+
+  void _mapLikeButtonEventToState(
+      LikeButtonEvent event, Emitter<OverviewState> emit) async {
+    emit(state.copyWith(status: OverviewStatus.loading));
+    try {
+      CustomMarker? newMarker = state.marker;
+      if (newMarker != null) {
+        newMarker.upVotes =
+            event.upVote ? newMarker.upVotes! + 1 : newMarker.upVotes! - 1;
+        emit(state.copyWith(marker: newMarker));
+      } else {
+        emit(state.copyWith(status: OverviewStatus.error));
       }
     } catch (error, stacktrace) {
       log(stacktrace.toString());

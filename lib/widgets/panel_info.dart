@@ -5,6 +5,7 @@ import 'package:nowtowv1/bloc/auth/auth_bloc.dart';
 import 'package:nowtowv1/bloc/auth/auth_events.dart';
 import 'package:nowtowv1/bloc/markers/markers_bloc.dart';
 import 'package:nowtowv1/bloc/markers/markers_events.dart';
+import 'package:nowtowv1/bloc/markers/markers_state.dart';
 import 'package:nowtowv1/bloc/overview/overview_bloc.dart';
 import 'package:nowtowv1/bloc/overview/overview_events.dart';
 import 'package:nowtowv1/bloc/overview/overview_state.dart';
@@ -71,13 +72,19 @@ class _PanelInfoState extends State<PanelInfo> {
           String name = state.marker?.name ?? "";
           bool explore = state.explore ?? false;
           return explore
-              ? ExplorePanelInfo(
-                  nearbyMarkers:
-                      BlocProvider.of<MarkersBloc>(context).state.nearbyMarkers,
-                  nearbyImages:
-                      BlocProvider.of<MarkersBloc>(context).state.nearbyImages,
-                  sc: widget.sc,
-                )
+              ? BlocBuilder<MarkersBloc, MarkersState>(
+                  bloc: BlocProvider.of<MarkersBloc>(context),
+                  builder: (context, state) {
+                    return ExplorePanelInfo(
+                      nearbyMarkers: BlocProvider.of<MarkersBloc>(context)
+                          .state
+                          .nearbyMarkers,
+                      nearbyImages: BlocProvider.of<MarkersBloc>(context)
+                          .state
+                          .nearbyImages,
+                      sc: widget.sc,
+                    );
+                  })
               : name == null
                   ? const SizedBox(child: CircularProgressIndicator())
                   : ListView(
@@ -275,8 +282,8 @@ class _PanelInfoState extends State<PanelInfo> {
       marker.upVotes = upVotes;
       BlocProvider.of<MarkersBloc>(context)
           .add(UpdateMarkerEvent(marker: marker, id: marker.id ?? ""));
-      BlocProvider.of<OverviewBloc>(context)
-          .add(SetMarkerEvent(marker: marker));
+      // BlocProvider.of<OverviewBloc>(context)
+      //     .add(const LikeButtonEvent(upVote: true));
       BlocProvider.of<AuthBloc>(context)
           .add(UpVoteMarkerEvent(id: marker.id ?? ""));
     } else {
@@ -285,8 +292,8 @@ class _PanelInfoState extends State<PanelInfo> {
       marker.upVotes = upVotes;
       BlocProvider.of<MarkersBloc>(context)
           .add(UpdateMarkerEvent(marker: marker, id: marker.id ?? ""));
-      BlocProvider.of<OverviewBloc>(context)
-          .add(SetMarkerEvent(marker: marker));
+      // BlocProvider.of<OverviewBloc>(context)
+      //     .add(const LikeButtonEvent(upVote: false));
       BlocProvider.of<AuthBloc>(context)
           .add(DownVoteMarkerEvent(id: marker.id ?? ""));
     }

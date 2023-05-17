@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:nowtowv1/bloc/markers/markers_bloc.dart';
+import 'package:nowtowv1/bloc/markers/markers_events.dart';
 import 'package:nowtowv1/bloc/overview/overview_bloc.dart';
 import 'package:nowtowv1/bloc/overview/overview_events.dart';
 import 'package:nowtowv1/models/marker.dart';
+import 'package:nowtowv1/utils/location_service.dart';
 import 'package:nowtowv1/widgets/nearby_marker_card.dart';
 
 class ExplorePanelInfo extends StatefulWidget {
@@ -24,6 +28,18 @@ class ExplorePanelInfo extends StatefulWidget {
 class _ExplorePanelInfoState extends State<ExplorePanelInfo> {
   @override
   Widget build(BuildContext context) {
+    if (widget.nearbyMarkers!.isEmpty) {
+      if (LocationService.currentLocation != null) {
+        BlocProvider.of<MarkersBloc>(context).add(GetNearbyMarkersEvent(
+            location:
+                LocationService.currentLocation ?? LatLng(30.2672, -97.7431)));
+      }
+    }
+    if (widget.nearbyMarkers!.isEmpty) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
     return ListView.builder(
         controller: widget.sc,
         itemCount: widget.nearbyMarkers!.length + 1,
