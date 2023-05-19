@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:like_button/like_button.dart';
@@ -60,7 +61,7 @@ class _PanelInfoState extends State<PanelInfo> {
               userMarker = true;
             }
           }
-          Widget image = const Center(child: CircularProgressIndicator());
+          Widget image = const Center(child: CupertinoActivityIndicator());
           bool hasImage = state.hasImage ?? true;
           if (!hasImage) {
             image = Container();
@@ -85,8 +86,32 @@ class _PanelInfoState extends State<PanelInfo> {
                       sc: widget.sc,
                     );
                   })
-              : name == null
-                  ? const SizedBox(child: CircularProgressIndicator())
+              : name == null || name == ""
+                  ? ListView(
+                      controller: widget.sc,
+                      children: <Widget>[
+                        SizedBox(
+                          height: 12.0,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Container(
+                              width: 30,
+                              height: 5,
+                              decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(12.0))),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 12.0,
+                        ),
+                        SizedBox(child: TitleShimmer(), height: 1000),
+                      ],
+                    )
                   : ListView(
                       controller: widget.sc,
                       children: <Widget>[

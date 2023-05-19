@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
@@ -37,7 +38,7 @@ class _ExplorePanelInfoState extends State<ExplorePanelInfo> {
     }
     if (widget.nearbyMarkers!.isEmpty) {
       return const Center(
-        child: CircularProgressIndicator(),
+        child: CupertinoActivityIndicator(),
       );
     }
     return ListView.builder(
@@ -92,7 +93,7 @@ class _ExplorePanelInfoState extends State<ExplorePanelInfo> {
             );
           } else {
             return widget.nearbyMarkers == null
-                ? const Center(child: CircularProgressIndicator())
+                ? const Center(child: CupertinoActivityIndicator())
                 : NearbyMarkerCard(
                     marker: widget.nearbyMarkers![index - 1],
                     nearbyImage: widget.nearbyImages![index - 1]);

@@ -36,7 +36,7 @@ class TitleShimmer extends StatelessWidget {
                           children: <Widget>[
                             Container(
                               width: double.infinity,
-                              height: 8.0,
+                              height: 12.0,
                               color: Colors.white,
                             ),
                             const Padding(
@@ -44,7 +44,7 @@ class TitleShimmer extends StatelessWidget {
                             ),
                             Container(
                               width: double.infinity,
-                              height: 8.0,
+                              height: 12.0,
                               color: Colors.white,
                             ),
                             const Padding(
@@ -52,7 +52,7 @@ class TitleShimmer extends StatelessWidget {
                             ),
                             Container(
                               width: 40.0,
-                              height: 8.0,
+                              height: 12.0,
                               color: Colors.white,
                             ),
                           ],

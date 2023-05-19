@@ -13,6 +13,7 @@ import 'package:nowtowv1/bloc/markers/markers_events.dart';
 import 'package:nowtowv1/bloc/markers/markers_state.dart';
 import 'package:nowtowv1/bloc/overview/overview_bloc.dart';
 import 'package:nowtowv1/bloc/overview/overview_events.dart';
+import 'package:nowtowv1/bloc/overview/overview_state.dart';
 import 'package:nowtowv1/data_structures/custom_stack.dart';
 import 'package:nowtowv1/models/marker.dart';
 import 'package:nowtowv1/utils/location_service.dart';
@@ -51,10 +52,18 @@ class _TowMapState extends State<TowMap> {
           builder: (context) => GestureDetector(
             child: GestureDetector(
               onTap: () {
-                BlocProvider.of<OverviewBloc>(context)
-                    .add(ToggleOpacityEvent(opacity: true, context: context));
-                BlocProvider.of<OverviewBloc>(context)
-                    .add(SetMarkerEvent(marker: customMarkers[i]));
+                if (BlocProvider.of<OverviewBloc>(context).state.marker !=
+                    null) {
+                  String name =
+                      BlocProvider.of<OverviewBloc>(context).state.marker!.name;
+                  if (name != "") {
+                    BlocProvider.of<OverviewBloc>(context)
+                        .add(SetMarkerEvent(marker: customMarkers[i]));
+                  }
+                } else {
+                  BlocProvider.of<OverviewBloc>(context)
+                      .add(SetMarkerEvent(marker: customMarkers[i]));
+                }
               },
               child: Icon(
                 Icons.location_pin,
