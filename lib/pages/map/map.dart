@@ -24,15 +24,15 @@ import 'package:nowtowv1/widgets/view_marker_dialog.dart';
 import 'package:shimmer/shimmer.dart';
 
 class TowMap extends StatefulWidget {
-  TowMap({Key? key}) : super(key: key);
+  TowMap({Key? key, required this.mapController}) : super(key: key);
+
+  MapController mapController;
 
   @override
   State<TowMap> createState() => _TowMapState();
 }
 
 class _TowMapState extends State<TowMap> {
-  final mapController = MapController();
-
   @override
   void initState() {
     super.initState();
@@ -49,6 +49,7 @@ class _TowMapState extends State<TowMap> {
       markers.add(
         Marker(
           point: LatLng(customMarkers[i].lat, customMarkers[i].lng),
+          height: 100,
           builder: (context) => GestureDetector(
             child: GestureDetector(
               onTap: () {
@@ -65,11 +66,18 @@ class _TowMapState extends State<TowMap> {
                       .add(SetMarkerEvent(marker: customMarkers[i]));
                 }
               },
-              child: Icon(
-                Icons.location_pin,
-                color: Colors.indigo,
-                size: 48.0,
-              ),
+              // child: Icon(
+              //   Icons.location_pin,
+              //   color: Colors.indigo,
+              //   size: 48.0,
+              // ),
+              child: Container(
+                  alignment: Alignment.bottomCenter,
+                  child: Image.asset(
+                    'assets/marker-transparent.png',
+                    width: 100,
+                    height: 100,
+                  )),
             ),
           ),
         ),
@@ -115,7 +123,7 @@ class _TowMapState extends State<TowMap> {
         return LocationService.currentLocation == null
             ? GenericShimmer()
             : FlutterMap(
-                mapController: mapController,
+                mapController: widget.mapController,
                 options: MapOptions(
                   onTap: (tapPosition, point) {
                     // final state = BlocProvider.of<MarkersBloc>(context).state;

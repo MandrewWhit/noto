@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:nowtowv1/bloc/auth/auth_bloc.dart';
 import 'package:nowtowv1/bloc/auth/auth_events.dart';
 import 'package:nowtowv1/bloc/auth/auth_state.dart';
@@ -10,6 +11,7 @@ import 'package:nowtowv1/utils/location_service.dart';
 import 'package:nowtowv1/utils/notow_colors.dart';
 import 'package:nowtowv1/utils/route_generator.dart';
 import 'package:nowtowv1/widgets/greeting.dart';
+import 'package:nowtowv1/widgets/instruction.dart';
 import 'package:nowtowv1/widgets/new_marker_button.dart';
 import 'package:nowtowv1/widgets/overview_card.dart';
 import 'package:nowtowv1/widgets/panel_info.dart';
@@ -58,7 +60,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final double _initFabHeight = 140.0;
+  final double _initFabHeight = 174.0;
   double _fabHeight = 0;
   //double _panelHeightOpen = 0;
   //double _panelHeightClosed = 125.0;
@@ -72,6 +74,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    MapController mapController = MapController();
+    _fabHeight = MediaQuery.of(context).size.height * .85;
     final userBloc = BlocProvider.of<AuthBloc>(context);
     if (userBloc.state.firstname == null || userBloc.state.lastname == null) {
       userBloc.add(GetNameEvent());
@@ -92,7 +96,7 @@ class _HomePageState extends State<HomePage> {
                     minHeight: state.panelHeightClosed ?? 0,
                     parallaxEnabled: true,
                     parallaxOffset: .5,
-                    body: _body(),
+                    body: TowMap(mapController: mapController),
                     panelBuilder: (sc) => _panel(sc),
                     borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(18.0),
@@ -104,19 +108,28 @@ class _HomePageState extends State<HomePage> {
                   );
                 }),
             // the fab
-            // Positioned(
-            //   right: 20.0,
-            //   bottom: _fabHeight,
-            //   child: FloatingActionButton(
-            //     child: Icon(
-            //       Icons.gps_fixed,
-            //       color: Theme.of(context).primaryColor,
-            //     ),
-            //     onPressed: () {},
-            //     backgroundColor: Colors.white,
-            //   ),
-            // ),
-
+            Positioned(
+              right: 20.0,
+              bottom: _fabHeight,
+              child: FloatingActionButton(
+                child: Icon(
+                  Icons.gps_fixed,
+                  color: Theme.of(context).primaryColor,
+                ),
+                onPressed: () {
+                  mapController.move(
+                      LocationService.currentLocation ??
+                          LatLng(30.2672, -97.7431),
+                      13);
+                },
+                backgroundColor: Colors.white,
+              ),
+            ),
+            Positioned(
+              left: 20,
+              bottom: _fabHeight,
+              child: const Instruction(),
+            ),
             Positioned(
                 top: 0,
                 child: ClipRRect(
@@ -140,9 +153,5 @@ class _HomePageState extends State<HomePage> {
         child: PanelInfo(
           sc: sc,
         ));
-  }
-
-  Widget _body() {
-    return TowMap();
   }
 }

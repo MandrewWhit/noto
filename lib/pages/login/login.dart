@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nowtowv1/bloc/auth/auth_bloc.dart';
 import 'package:nowtowv1/bloc/auth/auth_events.dart';
 import 'package:nowtowv1/utils/apple_signin_available.dart';
+import 'package:nowtowv1/widgets/pp_tos.dart';
 import 'package:provider/provider.dart';
 import 'package:the_apple_sign_in/the_apple_sign_in.dart' as apple;
 
@@ -37,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
         backgroundColor: Colors.white,
         body: Padding(
-          padding: const EdgeInsets.only(top: 150.0),
+          padding: const EdgeInsets.only(top: 50.0),
           child: ListView(
             children: <Widget>[
               Center(
@@ -54,10 +55,7 @@ class _LoginPageState extends State<LoginPage> {
                         children: <Widget>[
                           Padding(
                             padding: const EdgeInsets.only(
-                                left: 30.0,
-                                right: 30.0,
-                                top: 30.0,
-                                bottom: 20.0),
+                                left: 30.0, right: 30.0, top: 0, bottom: 20.0),
                             child: TextFormField(
                               controller: emailController,
                               decoration: InputDecoration(
@@ -124,7 +122,7 @@ class _LoginPageState extends State<LoginPage> {
                         ],
                       ),
                     ),
-                    //privacyPolicyLinkAndTermsOfService(),
+                    privacyPolicyLinkAndTermsOfService(),
                     Container(
                       height: 40,
                       width: 372,
