@@ -68,6 +68,8 @@ class OverviewBloc extends Bloc<OverviewEvent, OverviewState> {
         } else {
           hasImage = false;
         }
+      } else {
+        hasImage = false;
       }
       emit(
         state.copyWith(
